@@ -135,7 +135,6 @@ namespace JX3QuickRedBag
                         g.CopyFromScreen(rc.X,rc.Y,0,0,rc.Size,CopyPixelOperation.SourceCopy);
                         IntPtr s = g.GetHdc();
                         g.ReleaseHdc(s);
-                        //img.Save(config.Path + $"/RedBag{DateTime.Now.ToString("yyyy-MM-dd-HH-mm-ss-FFF")}.jpg", System.Drawing.Imaging.ImageFormat.Jpeg);
 
                         ImageSearch sd = new ImageSearch();
                         var p = sd.FindTemplateInImage(img, Path.Combine(AppDomain.CurrentDomain.BaseDirectory ,"Resource/RedBag.png"));
@@ -150,7 +149,6 @@ namespace JX3QuickRedBag
                             System.Threading.Thread.Sleep(1500);
                             dd.mov(250, 250);
 
-                            //img.Save(config.Path + $"/RedBag{DateTime.Now.ToString("yyyy-MM-dd-HH-mm-ss-FFF")}.jpg", System.Drawing.Imaging.ImageFormat.Jpeg);
 
                             Rectangle rcsave = new Rectangle(0, 0, Screen.PrimaryScreen.Bounds.Width, Screen.PrimaryScreen.Bounds.Height);
                             using (var saveimg = new Bitmap(rcsave.Width, rcsave.Height))
@@ -161,10 +159,11 @@ namespace JX3QuickRedBag
                                 gsave.ReleaseHdc(sdi);
 
                                 ImageSearch sdimg = new ImageSearch();
-                                saveimg.Save(config.Path + $"/RedBag{DateTime.Now.ToString("yyyyMMddHHmmssFFF")}.jpg", System.Drawing.Imaging.ImageFormat.Jpeg);
                                 var psave = sd.FindTemplateInImage(saveimg, Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Resource/Close.png"));
                                 if (!psave.IsEmpty)
                                 {
+                                    saveimg.Save(config.Path + $"/RedBag{DateTime.Now.ToString("yyyyMMddHHmmssFFF")}.jpg", System.Drawing.Imaging.ImageFormat.Jpeg);
+
                                     dd.mov(psave.X + 5, psave.Y + 5);
                                     dd.btn(1);
                                     System.Threading.Thread.Sleep(10);
