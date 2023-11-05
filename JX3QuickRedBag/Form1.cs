@@ -60,7 +60,7 @@ namespace JX3QuickRedBag
         private void Form1_Load(object sender, EventArgs e)
         {
 
-            
+
         }
 
         private void LoadDllFile(string dllfile)
@@ -69,9 +69,9 @@ namespace JX3QuickRedBag
             if (ret != 1) { MessageBox.Show("Load Error"); this.Close(); }
 
             ret = dd.btn(0); //DD Initialize
-            if (ret != 1) { MessageBox.Show("Initialize Error"); this.Close();  }
+            if (ret != 1) { MessageBox.Show("Initialize Error"); this.Close(); }
 
-           
+
         }
         #region "HotKey"
         [DllImport("user32.dll")]
@@ -89,7 +89,9 @@ namespace JX3QuickRedBag
 
         void reg_hotkey()
         {
-            RegisterHotKey(this.Handle, 80, 0, Keys.F8);
+            var s = RegisterHotKey(this.Handle, 80, 0, Keys.F8);
+            if (!s)
+                MessageBox.Show("快捷键被占用！");
         }
 
         void unreg_hotkey()
@@ -121,29 +123,46 @@ namespace JX3QuickRedBag
 
         private void Fun80()
         {
-            if(IsLock)
-                IsLock = false; 
+            if (IsLock)
+            {
+                IsLock = false;
+                MessageBox.Show("关闭成功");
+            }
             else
+            {
                 IsLock = true;
-            Task taks = new Task(()=>{
+                MessageBox.Show("开启成功");
+            }
+            Task taks = new Task(() =>
+            {
                 while (IsLock)
                 {
                     Rectangle rc = new Rectangle(0, 0, int.Parse(config.XS), int.Parse(config.YS));
-                    using (var img = new Bitmap(rc.Width,rc.Height))
+                    var FileList = Directory.GetFiles("Resource/");
+
+                    using (var img = new Bitmap(rc.Width, rc.Height))
                     using (Graphics g = Graphics.FromImage(img))
                     {
-                        g.CopyFromScreen(rc.X,rc.Y,0,0,rc.Size,CopyPixelOperation.SourceCopy);
+                        g.CopyFromScreen(rc.X, rc.Y, 0, 0, rc.Size, CopyPixelOperation.SourceCopy);
                         IntPtr s = g.GetHdc();
                         g.ReleaseHdc(s);
 
                         ImageSearch sd = new ImageSearch();
-                        var p = sd.FindTemplateInImage(img, Path.Combine(AppDomain.CurrentDomain.BaseDirectory ,"Resource/RedBag.png"));
+                        //判断红包
+                        var p = new Point();
+                        foreach (var file in FileList.Where(e => e.StartsWith("Resource/RedBag") && e.EndsWith(".png")))
+                        {
+                            p = sd.FindTemplateInImage(img, Path.Combine(AppDomain.CurrentDomain.BaseDirectory, file));
+                            if (p != null && p.IsEmpty == false)
+                                break;
+                        }
                         if (!p.IsEmpty)
                         {
                             dd.mov(p.X + 5, p.Y + 5);
                             dd.btn(1);
                             System.Threading.Thread.Sleep(10);
                             dd.btn(2);
+                            //延时后移动鼠标 避免世界频道卡死不刷新
                             System.Threading.Thread.Sleep(1000);
                             dd.mov(200, 200);
                             System.Threading.Thread.Sleep(1500);
@@ -159,24 +178,49 @@ namespace JX3QuickRedBag
                                 gsave.ReleaseHdc(sdi);
 
                                 ImageSearch sdimg = new ImageSearch();
-                                var psave = sd.FindTemplateInImage(saveimg, Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Resource/Close.png"));
-                                if (!psave.IsEmpty)
-                                {
-                                    saveimg.Save(config.Path + $"/RedBag{DateTime.Now.ToString("yyyyMMddHHmmssFFF")}.jpg", System.Drawing.Imaging.ImageFormat.Jpeg);
+                                //判断抢红包成功后 成功页面的叉叉
 
-                                    dd.mov(psave.X + 5, psave.Y + 5);
+                                var psaveSuccess = new Point();
+                                foreach (var file in FileList.Where(e => e.StartsWith("Resource/CloseSuccess") && e.EndsWith(".png")))
+                                {
+                                    psaveSuccess = sdimg.FindTemplateInImage(saveimg, Path.Combine(AppDomain.CurrentDomain.BaseDirectory, file));
+                                    if (psaveSuccess != null && psaveSuccess.IsEmpty == false)
+                                        break;
+                                }
+                                if (!psaveSuccess.IsEmpty)
+                                {
+                                    //保存截图至路径
+                                    saveimg.Save(config.Path + $"/RedBag{DateTime.Now.ToString("yyyyMMddHHmmssFFF")}.jpg", System.Drawing.Imaging.ImageFormat.Jpeg);
+                                    dd.mov(psaveSuccess.X + 5, psaveSuccess.Y + 5);
                                     dd.btn(1);
                                     System.Threading.Thread.Sleep(10);
                                     dd.btn(2);
-                                    System.Threading.Thread.Sleep(1000);
                                 }
+
+                                //判断抢红包失败后  领取红包页面的叉叉a
+                                var psaveFaile = new Point();
+                                foreach (var file in FileList.Where(e => e.StartsWith("Resource/CloseFaile") && e.EndsWith(".png")))
+                                {
+                                    psaveFaile = sdimg.FindTemplateInImage(saveimg, Path.Combine(AppDomain.CurrentDomain.BaseDirectory, file));
+                                    if (psaveFaile != null && psaveFaile.IsEmpty == false)
+                                        break;
+                                }
+                                if (!psaveFaile.IsEmpty)
+                                {
+                                    //判断失败不抢红包保存图片
+                                    dd.mov(psaveFaile.X + 5, psaveFaile.Y + 5);
+                                    dd.btn(1);
+                                    System.Threading.Thread.Sleep(10);
+                                    dd.btn(2);
+                                }
+
                             }
                         }
                     }
                 }
             });
             taks.Start();
-            
+
         }
 
         #endregion

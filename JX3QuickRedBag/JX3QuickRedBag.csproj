@@ -114,6 +114,9 @@
     <Content Include="dd\ddx64.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="resource\Close.png" />
+    <Content Include="resource\RedBag.png" />
+    <Content Include="resource\RedBag1.png" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Emgu.CV">
