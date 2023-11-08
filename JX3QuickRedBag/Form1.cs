@@ -189,8 +189,10 @@ namespace JX3QuickRedBag
                                 }
                                 if (!psaveSuccess.IsEmpty)
                                 {
+                                    if(!Directory.Exists(config.Path + "/"+DateTime.Now.ToShortDateString()))
+                                        Directory.CreateDirectory(config.Path + "/"+DateTime.Now.ToShortDateString());
                                     //保存截图至路径
-                                    saveimg.Save(config.Path + $"/RedBag{DateTime.Now.ToString("yyyyMMddHHmmssFFF")}.jpg", System.Drawing.Imaging.ImageFormat.Jpeg);
+                                    saveimg.Save(config.Path + $"/{DateTime.Now.ToShortDateString()}/RedBag{DateTime.Now.ToString("yyyyMMddHHmmssFFF")}.jpg", System.Drawing.Imaging.ImageFormat.Jpeg);
                                     dd.mov(psaveSuccess.X + 5, psaveSuccess.Y + 5);
                                     dd.btn(1);
                                     System.Threading.Thread.Sleep(10);
