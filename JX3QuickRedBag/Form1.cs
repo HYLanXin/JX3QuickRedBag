@@ -39,6 +39,8 @@ namespace JX3QuickRedBag
             m.XS = textBox_X2.Text;
             m.YS = textBox_Y2.Text;
             m.Path = textBox5.Text;
+            m.UserX  = textBox_UserX.Text;
+            m.UserY = textBox_UserY.Text;
             config = m;
 
             var path = textBox5.Text;
@@ -174,6 +176,9 @@ namespace JX3QuickRedBag
                             using (var saveimg = new Bitmap(rcsave.Width, rcsave.Height))
                             using (Graphics gsave = Graphics.FromImage(saveimg))
                             {
+                                dd.key(100, 1); //1=down
+                                System.Threading.Thread.Sleep(50);           //may, delay 50ms
+                                dd.key(100, 2); //2 = up
                                 gsave.CopyFromScreen(rcsave.X, rcsave.Y, 0, 0, rcsave.Size, CopyPixelOperation.SourceCopy);
                                 IntPtr sdi = gsave.GetHdc();
                                 gsave.ReleaseHdc(sdi);
@@ -209,11 +214,18 @@ namespace JX3QuickRedBag
                                             System.Threading.Thread.Sleep(50);           //may, delay 50ms
                                             dd.key(ddcode, 2); //2 = up
                                             System.Threading.Thread.Sleep(5000);           //may, delay 5s
-                                            dd.mov(int.Parse(textBox_UserX.Text), int.Parse(textBox_UserY.Text));
+                                            dd.mov(int.Parse(config.UserX), int.Parse(config.UserY));
                                             dd.btn(1); 
                                             dd.btn(2);
                                             dd.btn(1);
-                                            dd.btn(2); 
+                                            dd.btn(2);
+                                            System.Threading.Thread.Sleep(5000);           //may, delay 5s
+                                                                                           //CTRL+ALT+DEL
+                                            dd.key(600, 1);                                      //600 == L.CTRL down
+                                            dd.key(102, 1);                                      // F2   down
+                                            System.Threading.Thread.Sleep(5);
+                                            dd.key(102, 2);
+                                            dd.key(600, 2);
                                         }
                                         else {
                                             IsLock = false;
@@ -266,6 +278,8 @@ namespace JX3QuickRedBag
                         textBox_X2.Text = m.XS ?? "";
                         textBox_Y2.Text = m.YS ?? "";
                         textBox5.Text = m.Path ?? path;
+                        textBox_UserX.Text = m.UserX ?? "";
+                        textBox_UserY.Text = m.UserY ?? "";
                         path = m.Path ?? path;
                         config = m;
                     }

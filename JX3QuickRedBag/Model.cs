@@ -15,5 +15,8 @@ namespace JX3QuickRedBag
         /// 路径
         /// </summary>
         public string Path { get; set; }
+
+        public string UserX { get; set; }
+        public string UserY { get; set; }
     }
 }
