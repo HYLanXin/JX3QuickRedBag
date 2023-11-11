@@ -202,8 +202,24 @@ namespace JX3QuickRedBag
                                     dd.btn(2);
                                     if (QuickCount % 5 == 0)
                                     {
-                                        IsLock = false;
-                                        MessageBox.Show("已完成该账号5次,自动关闭成功");
+                                        if (checkBox1.Checked)
+                                        {
+                                            int ddcode = 801; //小键盘1  设置返回角色
+                                            dd.key(ddcode, 1); //1=down
+                                            System.Threading.Thread.Sleep(50);           //may, delay 50ms
+                                            dd.key(ddcode, 2); //2 = up
+                                            System.Threading.Thread.Sleep(5000);           //may, delay 5s
+                                            dd.mov(int.Parse(textBox_UserX.Text), int.Parse(textBox_UserY.Text));
+                                            dd.btn(1); 
+                                            dd.btn(2);
+                                            dd.btn(1);
+                                            dd.btn(2); 
+                                        }
+                                        else {
+                                            IsLock = false;
+                                            MessageBox.Show("已完成该账号5次,自动关闭成功");
+                                        }
+                                        
                                     }
                                 }
 
