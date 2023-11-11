@@ -22,6 +22,7 @@ namespace JX3QuickRedBag
         private CDD dd;
         private Model config = new Model();
         private bool IsLock = false;
+        public int QuickCount = 0;
         public Form1()
         {
             InitializeComponent();
@@ -189,14 +190,21 @@ namespace JX3QuickRedBag
                                 }
                                 if (!psaveSuccess.IsEmpty)
                                 {
-                                    if(!Directory.Exists(config.Path + "/"+DateTime.Now.ToShortDateString()))
-                                        Directory.CreateDirectory(config.Path + "/"+DateTime.Now.ToShortDateString());
+                                    QuickCount++;
+
+                                    if (!Directory.Exists(config.Path + "/" + DateTime.Now.ToShortDateString()))
+                                        Directory.CreateDirectory(config.Path + "/" + DateTime.Now.ToShortDateString());
                                     //保存截图至路径
                                     saveimg.Save(config.Path + $"/{DateTime.Now.ToShortDateString()}/RedBag{DateTime.Now.ToString("yyyyMMddHHmmssFFF")}.jpg", System.Drawing.Imaging.ImageFormat.Jpeg);
                                     dd.mov(psaveSuccess.X + 5, psaveSuccess.Y + 5);
                                     dd.btn(1);
                                     System.Threading.Thread.Sleep(10);
                                     dd.btn(2);
+                                    if (QuickCount % 5 == 0)
+                                    {
+                                        IsLock = false;
+                                        MessageBox.Show("已完成该账号5次,自动关闭成功");
+                                    }
                                 }
 
                                 //判断抢红包失败后  领取红包页面的叉叉a
