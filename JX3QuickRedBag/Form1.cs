@@ -176,9 +176,7 @@ namespace JX3QuickRedBag
                             using (var saveimg = new Bitmap(rcsave.Width, rcsave.Height))
                             using (Graphics gsave = Graphics.FromImage(saveimg))
                             {
-                                dd.key(100, 1); //1=down
-                                System.Threading.Thread.Sleep(50);           //may, delay 50ms
-                                dd.key(100, 2); //2 = up
+                                
                                 gsave.CopyFromScreen(rcsave.X, rcsave.Y, 0, 0, rcsave.Size, CopyPixelOperation.SourceCopy);
                                 IntPtr sdi = gsave.GetHdc();
                                 gsave.ReleaseHdc(sdi);
@@ -219,13 +217,41 @@ namespace JX3QuickRedBag
                                             dd.btn(2);
                                             dd.btn(1);
                                             dd.btn(2);
-                                            System.Threading.Thread.Sleep(5000);           //may, delay 5s
-                                                                                           //CTRL+ALT+DEL
-                                            dd.key(600, 1);                                      //600 == L.CTRL down
-                                            dd.key(102, 1);                                      // F2   down
-                                            System.Threading.Thread.Sleep(5);
-                                            dd.key(102, 2);
-                                            dd.key(600, 2);
+                                            while (true)
+                                            {
+                                                Rectangle rcuser = new Rectangle(0, 300, 300, 300);
+                                                using (var userimg = new Bitmap(rcuser.Width, rcuser.Height))
+                                                using (Graphics userve = Graphics.FromImage(saveimg))
+                                                {
+                                                    userve.CopyFromScreen(rcuser.X, rcuser.Y, 0, 0, rcuser.Size, CopyPixelOperation.SourceCopy);
+                                                    IntPtr sdiuser = userve.GetHdc();
+                                                    userve.ReleaseHdc(sdiuser);
+                                                    //判断是否成功进入角色
+                                                    var userLogin = new Point();
+                                                    ImageSearch userimgs = new ImageSearch();
+                                                    foreach (var file in FileList.Where(e => e.StartsWith("Resource/userLogin") && e.EndsWith(".png")))
+                                                    {
+                                                        userLogin = userimgs.FindTemplateInImage(userimg, Path.Combine(AppDomain.CurrentDomain.BaseDirectory, file));
+                                                        if (userLogin != null && userLogin.IsEmpty == false)
+                                                            break;
+                                                    }
+                                                    if (!userLogin.IsEmpty)
+                                                    {
+                                                        dd.key(600, 1);                                      //600 == L.CTRL down
+                                                        dd.key(102, 1);                                      // F2   down
+                                                        System.Threading.Thread.Sleep(5);
+                                                        dd.key(102, 2);
+                                                        dd.key(600, 2);
+                                                        System.Threading.Thread.Sleep(1000);
+                                                        dd.key(100, 1); //1=down
+                                                        System.Threading.Thread.Sleep(50);           //may, delay 50ms
+                                                        dd.key(100, 2); //2 = up
+                                                        break;
+                                                    }
+                                                }
+
+                                            }
+                                            
                                         }
                                         else {
                                             IsLock = false;
